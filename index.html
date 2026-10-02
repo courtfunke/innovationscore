@@ -1,788 +1,1409 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FIRST LEGO League - Innovation Project Rubric</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary: #0066cc;
-      --primary-hover: #0052a3;
-      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      --card-bg: #ffffff;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      
-      --lvl1-bg: #fef2f2; --lvl1-border: #fca5a5; --lvl1-text: #991b1b;
-      --lvl2-bg: #fffbeb; --lvl2-border: #fde68a; --lvl2-text: #92400e;
-      --lvl3-bg: #f0fdf4; --lvl3-border: #86efac; --lvl3-text: #166534;
-      --lvl4-bg: #eff6ff; --lvl4-border: #93c5fd; --lvl4-text: #1e40af;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--bg-gradient);
-      color: var(--text-main);
-      min-height: 100vh;
-      padding: 2rem 1rem;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: var(--card-bg);
-      border-radius: 16px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
-      overflow: hidden;
-    }
-
-    header {
-      background: #0f172a;
-      color: white;
-      padding: 1.75rem 2rem;
-      border-bottom: 4px solid var(--primary);
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .brand h1 {
-      font-size: 1.5rem;
-      font-weight: 800;
-      letter-spacing: -0.025em;
-      color: #ffffff;
-    }
-    .brand p {
-      color: #94a3b8;
-      font-size: 0.875rem;
-      font-weight: 500;
-    }
-
-    .team-info {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 1rem;
-      padding: 1.5rem 2rem;
-      background: #f8fafc;
-      border-bottom: 1px solid var(--border);
-    }
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-    }
-    .input-group label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-    }
-    .input-group input {
-      padding: 0.6rem 0.8rem;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      outline: none;
-      transition: all 0.2s;
-    }
-    .input-group input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
-    }
-
-    /* TIMER SECTION */
-    .timer-card {
-      background: #1e293b;
-      color: white;
-      margin: 1.5rem 2rem 0;
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-    .timer-display-container {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    .timer-digits {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 2.5rem;
-      font-weight: 700;
-      background: #0f172a;
-      padding: 0.25rem 1rem;
-      border-radius: 8px;
-      border: 2px solid #334155;
-      color: #38bdf8;
-      letter-spacing: 2px;
-    }
-    .timer-digits.warning {
-      color: #fbbf24;
-      border-color: #f59e0b;
-    }
-    .timer-digits.time-up {
-      color: #ef4444;
-      border-color: #dc2626;
-      animation: pulse 1s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-    .timer-controls {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .btn-timer {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn-start { background: #22c55e; color: white; }
-    .btn-start:hover { background: #16a34a; }
-    .btn-pause { background: #eab308; color: white; }
-    .btn-pause:hover { background: #ca8a04; }
-    .btn-reset { background: #64748b; color: white; }
-    .btn-reset:hover { background: #475569; }
-    .btn-preset { background: #334155; color: #cbd5e1; }
-    .btn-preset:hover { background: #475569; color: white; }
-
-    /* RUBRIC TABLE */
-    .rubric-container {
-      padding: 1.5rem 2rem;
-      overflow-x: auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-    th, td {
-      padding: 1rem;
-      border: 1px solid var(--border);
-      vertical-align: top;
-    }
-    th {
-      background: #f8fafc;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-    }
-    .col-criteria { width: 22%; }
-    .col-level { width: 17.5%; }
-    .col-exceeds { width: 25%; }
-
-    .criteria-title {
-      font-weight: 800;
-      font-size: 0.95rem;
-      color: #0f172a;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    .criteria-desc {
-      font-size: 0.825rem;
-      color: var(--text-muted);
-      margin-top: 0.35rem;
-      line-height: 1.4;
-    }
-
-    .level-cell {
-      cursor: pointer;
-      transition: all 0.15s ease;
-      position: relative;
-    }
-    .level-cell:hover { background: #f1f5f9; }
-
-    .level-cell.lvl-1.selected { background: var(--lvl1-bg); border-color: var(--lvl1-border); }
-    .level-cell.lvl-2.selected { background: var(--lvl2-bg); border-color: var(--lvl2-border); }
-    .level-cell.lvl-3.selected { background: var(--lvl3-bg); border-color: var(--lvl3-border); }
-    .level-cell.lvl-4.selected { background: var(--lvl4-bg); border-color: var(--lvl4-border); }
-
-    .radio-wrapper {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.6rem;
-    }
-    .radio-wrapper input[type="radio"] {
-      margin-top: 0.15rem;
-      cursor: pointer;
-      width: 16px;
-      height: 16px;
-    }
-    .cell-text {
-      font-size: 0.825rem;
-      line-height: 1.35;
-      color: #334155;
-    }
-
-    .exceeds-textarea {
-      width: 100%;
-      height: 80px;
-      padding: 0.5rem;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      font-size: 0.825rem;
-      font-family: inherit;
-      resize: vertical;
-      outline: none;
-    }
-    .exceeds-textarea:focus {
-      border-color: var(--primary);
-    }
-
-    .dual-award-note {
-      padding: 1rem 2rem;
-      background: #eff6ff;
-      border-top: 1px solid #bfdbfe;
-      border-bottom: 1px solid #bfdbfe;
-      font-size: 0.825rem;
-      color: #1e40af;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .footer-actions {
-      padding: 1.5rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #f8fafc;
-    }
-    .score-summary {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #0f172a;
-    }
-    .score-summary span {
-      color: var(--primary);
-    }
-    .btn-submit {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.75rem 1.75rem;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn-submit:hover {
-      background: var(--primary-hover);
-    }
-
-    /* PRINT STYLES */
-    @media print {
-      body { background: white; color: black; padding: 0; }
-      .container { box-shadow: none; max-width: 100%; border-radius: 0; }
-      .timer-card, .btn-submit, .btn-timer, .timer-controls { display: none !important; }
-      th, td { padding: 0.5rem; font-size: 0.8rem; }
-      .exceeds-textarea { border: none; height: auto; padding: 0; }
-      input[type="text"] { border: none; background: transparent; }
-    }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-    <header>
-      <div class="brand">
-        <h1>FIRST LEGO LEAGUE</h1>
-        <p>Innovation Project Judging Rubric</p>
-      </div>
-    </header>
-
-    <div class="team-info">
-      <div class="input-group">
-        <label for="teamNo">Team #</label>
-        <input type="text" id="teamNo" placeholder="e.g. 12345">
-      </div>
-      <div class="input-group">
-        <label for="teamName">Team Name</label>
-        <input type="text" id="teamName" placeholder="e.g. TechnoBots">
-      </div>
-      <div class="input-group">
-        <label for="judgingRoom">Judging Room</label>
-        <input type="text" id="judgingRoom" placeholder="e.g. Room A">
-      </div>
-    </div>
-
-    <!-- 5-MINUTE TIMER -->
-    <div class="timer-card">
-      <div class="timer-display-container">
-        <div class="timer-digits" id="timerDisplay">05:00</div>
-        <div>
-          <div style="font-weight: 700; font-size: 0.9rem;">Presentation Timer</div>
-          <div style="font-size: 0.75rem; color: #94a3b8;">Standard 5-minute limit</div>
-        </div>
-      </div>
-      <div class="timer-controls">
-        <button class="btn-timer btn-start" onclick="startTimer()">Start</button>
-        <button class="btn-timer btn-pause" onclick="pauseTimer()">Pause</button>
-        Here is the complete source code for your single-file web application (`index.html`). 
-
-You can save this code directly into a file named **`index.html`** in your repository and host it on **GitHub Pages**.
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FLL Innovation Project Rubric & Evaluator</title>
-    <!-- Tailwind CSS -->
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
-    <style>
-        @keyframes pulse-red {
-            0%, 100% { background-color: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.5); }
-            50% { background-color: rgba(239, 68, 68, 0.25); border-color: rgba(239, 68, 68, 0.9); }
-        }
-        .timer-warning {
-            animation: pulse-red 1.5s infinite;
-        }
-
-        /* Dedicated Print Stylesheet */
-        @media print {
-            body {
-                background: white !important;
-                color: black !important;
-                font-size: 12pt;
+    <title>FLL Innovation Project Scoring Rubric & Timer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        fll: {
+                            red: '#E21B23',
+                            blue: '#005CB9',
+                            yellow: '#FFC72C',
+                            dark: '#1E293B',
+                            light: '#F8FAFC'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
             }
+        }
+    </script>
+
+    <style>
+        @media print {
             .no-print {
                 display: none !important;
             }
-            .print-only {
-                display: block !important;
+            body {
+                background-color: white !important;
+                color: black !important;
+                font-size: 11pt;
             }
-            .shadow-lg, .shadow-md, .shadow-sm {
+            .print-container {
+                width: 100% !important;
+                max-width: none !important;
                 box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
             }
-            .border {
-                border-color: #000 !important;
-            }
-            .rubric-card {
+            .print-break-inside-avoid {
                 break-inside: avoid;
-                page-break-inside: avoid;
+            }
+            .exceeds-input-print {
                 border: 1px solid #ccc !important;
-                margin-bottom: 1rem !important;
+                background: #f9f9f9 !important;
             }
-            input, select, textarea {
-                border: none !important;
-                background: transparent !important;
-            }
-            .radio-print-selected {
-                font-weight: bold;
-                text-decoration: underline;
+            .rubric-card-selected {
+                border: 2px solid #000 !important;
+                background-color: #f0f0f0 !important;
             }
         }
 
-        @media screen {
-            .print-only {
-                display: none !important;
-            }
+        .rubric-option {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .rubric-option:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Pulse keyframes for timer alerts */
+        @keyframes alert-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.02); }
+        }
+
+        .timer-warning {
+            animation: alert-pulse 1s infinite;
+        }
+
+        .timer-finished {
+            animation: alert-pulse 0.5s infinite;
+        }
+
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
         }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800 font-sans pb-12">
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200 font-sans pb-12">
 
-    <!-- Header & App Controls -->
-    <header class="bg-slate-900 text-white shadow-md no-print">
-        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-                <span class="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded tracking-wider uppercase">FIRST® LEGO® League</span>
-                <h1 class="text-2xl font-black tracking-tight mt-1">Innovation Project Rubric</h1>
+    <header class="no-print sticky top-0 z-50 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="bg-fll-red text-white p-2 rounded-lg font-black text-xl tracking-wider flex items-center shadow-sm">
+                    <span class="text-fll-yellow mr-1"><i class="fa-solid font-bold">FIRST</i></span> LEGO®
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">Innovation Project Rubric</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">FIRST LEGO League Challenge Scoring</p>
+                </div>
             </div>
-            <div class="flex items-center gap-2">
-                <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium px-3 py-2 rounded border border-slate-700 transition flex items-center gap-1.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                    Print / Save PDF
+
+            <!-- Header Quick Actions -->
+            <div class="flex items-center flex-wrap gap-2">
+                <button onclick="setAllAccomplished()" class="px-3 py-1.5 text-xs font-semibold bg-blue-50 dark:bg-blue-900/40 text-fll-blue dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/60 rounded-md border border-blue-200 dark:border-blue-700 transition">
+                    <i class="fa-solid fa-check-double mr-1.5"></i>All Accomplished (3)
+                </button>
+                <button onclick="resetRubric()" class="px-3 py-1.5 text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-md transition">
+                    <i class="fa-solid fa-rotate-right mr-1.5"></i>Reset
+                </button>
+                
+                <div class="h-6 w-px bg-slate-300 dark:bg-slate-700 mx-1"></div>
+
+                <!-- Export options dropdown -->
+                <div class="relative inline-block text-left group">
+                    <button class="px-3 py-1.5 text-xs font-semibold bg-fll-blue text-white hover:bg-blue-700 rounded-md shadow-sm transition flex items-center">
+                        <i class="fa-solid fa-download mr-1.5"></i>Export / Print <i class="fa-solid fa-chevron-down ml-1 text-[10px]"></i>
+                    </button>
+                    <div class="hidden group-hover:block absolute right-0 mt-1 w-48 bg-white dark:bg-slate-800 rounded-md shadow-lg border border-slate-200 dark:border-slate-700 z-50 py-1">
+                        <button onclick="window.print()" class="w-full text-left px-4 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center">
+                            <i class="fa-solid fa-print w-5 text-slate-400"></i>Print / Save to PDF
+                        </button>
+                        <button onclick="exportCSV()" class="w-full text-left px-4 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center">
+                            <i class="fa-solid fa-file-csv w-5 text-slate-400"></i>Export to CSV
+                        </button>
+                        <button onclick="exportJSON()" class="w-full text-left px-4 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center">
+                            <i class="fa-solid fa-code w-5 text-slate-400"></i>Export JSON
+                        </button>
+                        <label class="w-full text-left px-4 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center cursor-pointer">
+                            <i class="fa-solid fa-upload w-5 text-slate-400"></i>Import JSON
+                            <input type="file" id="importJsonInput" accept=".json" class="hidden" onchange="importJSON(event)">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Dark Mode Toggle -->
+                <button onclick="toggleDarkMode()" class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    <i id="theme-icon" class="fa-solid fa-moon text-base"></i>
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-4 mt-6">
-
-        <!-- Standalone 5-Minute Timer Module -->
-        <section class="bg-slate-800 text-white rounded-xl shadow-lg p-5 mb-8 border border-slate-700 no-print" id="timer-card">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 print-container">
+        
+        <!-- PROMINENT 5-MINUTE PRESENTATION TIMER BANNER -->
+        <div id="timer-card" class="no-print bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 mb-6 transition-all duration-300">
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="text-center md:text-left">
-                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Presentation Timer</h2>
-                    <div id="timer-display" class="text-5xl font-mono font-bold tracking-wider text-cyan-400 mt-1">05:00</div>
-                </div>
-
-                <div class="flex flex-wrap items-center justify-center gap-2">
-                    <button id="btn-start" onclick="toggleTimer()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2.5 rounded-lg transition flex items-center gap-2 shadow">
-                        <svg id="play-icon" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.333-5.89a1.5 1.5 0 000-2.538L6.3 2.841z"></path></svg>
-                        <span id="btn-start-label">Start</span>
-                    </button>
-                    <button onclick="resetTimer()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold px-4 py-2.5 rounded-lg transition">
-                        Reset
-                    </button>
-                    
-                    <div class="h-8 w-px bg-slate-700 mx-1 hidden sm:block"></div>
-
-                    <div class="flex items-center gap-1">
-                        <button onclick="setPreset(300)" class="text-xs bg-slate-700 hover:bg-slate-600 px-2.5 py-1.5 rounded font-mono text-slate-300">5:00</button>
-                        <button onclick="setPreset(180)" class="text-xs bg-slate-700 hover:bg-slate-600 px-2.5 py-1.5 rounded font-mono text-slate-300">3:00</button>
-                        <button onclick="setPreset(600)" class="text-xs bg-slate-700 hover:bg-slate-600 px-2.5 py-1.5 rounded font-mono text-slate-300">10:00</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Evaluation Form -->
-        <form id="rubric-form" onsubmit="handleFormSubmit(event)" class="space-y-6">
-
-            <!-- Team Details Header Card -->
-            <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Team #</label>
-                        <input type="text" id="team-number" required placeholder="e.g. 12345" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                
+                <!-- Timer Info & Status Badge -->
+                <div class="flex items-center space-x-3">
+                    <div id="timer-icon-bg" class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-fll-blue dark:text-blue-400 flex items-center justify-center text-xl transition-colors">
+                        <i class="fa-solid fa-stopwatch"></i>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Team Name</label>
-                        <input type="text" id="team-name" required placeholder="e.g. RoboBuilders" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Judging Room</label>
-                        <input type="text" id="judging-room" placeholder="e.g. Room B" class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Presentation Timer</h2>
+                            <span id="timer-status-badge" class="px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                                Ready
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Standard FLL Team Presentation: 5 Minutes</p>
                     </div>
                 </div>
-            </div>
 
-            <!-- Printable Header Title -->
-            <div class="print-only text-center mb-4 border-b pb-4">
-                <h1 class="text-2xl font-bold">FIRST® LEGO® League - Innovation Project Rubric</h1>
-                <p id="print-team-info" class="text-lg font-medium mt-1"></p>
-            </div>
+                <!-- Large Digital Clock Display -->
+                <div class="flex items-center space-x-3">
+                    <div id="timer-display-container" class="bg-slate-900 text-white dark:bg-slate-950 px-6 py-2 rounded-xl border border-slate-800 dark:border-slate-800 shadow-inner flex items-center justify-center transition-colors">
+                        <span id="timer-display" class="font-mono font-black text-3xl sm:text-4xl tracking-wider text-emerald-400">05:00</span>
+                    </div>
 
-            <!-- Rubric Criteria Container -->
-            <div id="rubric-criteria" class="space-y-6"></div>
-
-            <!-- Submit & Action Bar -->
-            <div class="bg-white rounded-xl shadow-md p-6 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 no-print">
-                <div>
-                    <div class="text-sm font-bold text-slate-500 uppercase">Total Calculated Score</div>
-                    <div id="total-score-display" class="text-3xl font-black text-slate-800">0 / 20 <span class="text-lg font-normal text-slate-500">(0%)</span></div>
-                </div>
-                <div class="flex items-center gap-3 w-full sm:w-auto">
-                    <button type="button" onclick="resetForm()" class="w-1/2 sm:w-auto px-4 py-2.5 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 font-medium transition">
-                        Clear Form
-                    </button>
-                    <button type="submit" class="w-1/2 sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                        Submit & Print PDF
+                    <!-- Audio Sound Toggle -->
+                    <button id="sound-toggle-btn" onclick="toggleSound()" class="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition" title="Toggle audio alert">
+                        <i id="sound-icon" class="fa-solid fa-volume-high text-sm"></i>
                     </button>
                 </div>
+
+                <!-- Timer Controls & Presets -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <button id="timer-start-btn" onclick="toggleTimer()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-sm transition flex items-center">
+                        <i id="timer-play-icon" class="fa-solid fa-play mr-1.5"></i> <span id="timer-play-text">Start</span>
+                    </button>
+                    <button onclick="resetTimer()" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-lg transition flex items-center">
+                        <i class="fa-solid fa-arrow-rotate-left mr-1.5"></i> Reset
+                    </button>
+
+                    <!-- Quick Preset Dropdown -->
+                    <div class="relative inline-block text-left group">
+                        <button class="px-3 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 font-bold text-xs rounded-lg transition flex items-center">
+                            Presets <i class="fa-solid fa-chevron-down ml-1.5 text-[10px]"></i>
+                        </button>
+                        <div class="hidden group-hover:block absolute right-0 mt-1 w-36 bg-white dark:bg-slate-800 rounded-md shadow-lg border border-slate-200 dark:border-slate-700 z-50 py-1">
+                            <button onclick="setTimerPreset(300)" class="w-full text-left px-3 py-1.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                5:00 (Standard)
+                            </button>
+                            <button onclick="setTimerPreset(180)" class="w-full text-left px-3 py-1.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                3:00 (Short)
+                            </button>
+                            <button onclick="setTimerPreset(600)" class="w-full text-left px-3 py-1.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
+                                10:00 (Full Session)
+                            </button>
+                            <button onclick="setCustomTimer()" class="w-full text-left px-3 py-1.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 border-t border-slate-100 dark:border-slate-700">
+                                Custom Time...
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Notification Toast Container -->
+        <div id="toast" class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 translate-y-20 opacity-0 pointer-events-none bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-green-400"></i>
+            <span id="toast-msg" class="text-xs font-medium">Notification message</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+            <!-- Left/Main Column: Team Header Metadata & Criteria Rubric -->
+            <div class="lg:col-span-3 space-y-6">
+
+                <!-- Team Metadata Card -->
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5">
+                    <div class="border-b border-slate-100 dark:border-slate-700/80 pb-3 mb-4 flex justify-between items-center">
+                        <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center">
+                            <i class="fa-solid fa-users text-fll-blue mr-2"></i> Team & Session Information
+                        </h2>
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-red-100 dark:bg-red-900/40 text-fll-red dark:text-red-300 rounded-full">
+                            FLL Challenge
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="teamNumber" class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Team # <span class="text-red-500">*</span></label>
+                            <input type="text" id="teamNumber" placeholder="e.g. 12345" class="w-full text-sm px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-fll-blue dark:text-white">
+                        </div>
+                        <div>
+                            <label for="teamName" class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Team Name <span class="text-red-500">*</span></label>
+                            <input type="text" id="teamName" placeholder="e.g. Robo Builders" class="w-full text-sm px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-fll-blue dark:text-white">
+                        </div>
+                        <div>
+                            <label for="judgingRoom" class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Judging Room</label>
+                            <input type="text" id="judgingRoom" placeholder="e.g. Room B" class="w-full text-sm px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-fll-blue dark:text-white">
+                        </div>
+                        <div class="sm:col-span-2 md:col-span-3">
+                            <label for="judgeNotes" class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Judge Name / General Comments</label>
+                            <input type="text" id="judgeNotes" placeholder="Judge name, team observations, core values highlights..." class="w-full text-sm px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-fll-blue dark:text-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rubric Scoring Guide Header -->
+                <div class="bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl p-4 shadow-md flex flex-wrap items-center justify-between gap-4">
+                    <div class="text-xs space-y-1">
+                        <div class="font-bold text-sm tracking-wide text-amber-400"><i class="fa-solid fa-lightbulb mr-1.5"></i>Instructions for Judges:</div>
+                        <p class="text-slate-300">Select 1 level per criterion row (1-4). When <span class="text-amber-300 font-semibold">EXCEEDS (4)</span> is selected, a brief comment explaining how the team exceeded is required.</p>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">
+                            <i class="fa-solid fa-star text-amber-400 mr-1.5"></i> Dual Criteria = Core Values (25%)
+                        </span>
+                    </div>
+                </div>
+
+                <!-- SECTION 1: IDENTIFY -->
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden print-break-inside-avoid">
+                    <div class="bg-slate-50 dark:bg-slate-800/80 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-8 bg-fll-blue rounded-full inline-block"></span>
+                            <h3 class="font-black text-slate-900 dark:text-white tracking-wide text-base uppercase">1. IDENTIFY</h3>
+                        </div>
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Identify a clear problem & perform thorough research</span>
+                    </div>
+
+                    <div class="p-5 space-y-6">
+                        <!-- Identify - Row 1 -->
+                        <div class="rubric-row" data-category="IDENTIFY" data-criterion="Problem Definition">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                                    Problem Definition
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="identify_problem" value="1" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">1 - Beginning</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Unclear definition of the problem</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="identify_problem" value="2" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">2 - Developing</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Partially clear definition of the problem</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="identify_problem" value="3" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">3 - Accomplished</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Clear definition of the problem</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="identify_problem" value="4" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">4 - Exceeds</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Exceeds Accomplished criteria</p>
+                                </label>
+                            </div>
+                            <div id="exceeds_identify_problem" class="hidden mt-3 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+                                <label class="block text-xs font-semibold text-emerald-800 dark:text-emerald-300 mb-1">
+                                    <i class="fa-solid fa-pen mr-1"></i> How has the team exceeded in Problem Definition? <span class="text-red-500">*</span>
+                                </label>
+                                <textarea rows="2" placeholder="Required: Detail specific accomplishments..." class="w-full text-xs p-2 bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:text-white exceeds-input-print"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Identify - Row 2 -->
+                        <div class="rubric-row pt-4 border-t border-slate-100 dark:border-slate-700/60" data-category="IDENTIFY" data-criterion="Research">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                                    Research
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="identify_research" value="1" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">1 - Beginning</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Minimal evidence of research</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="identify_research" value="2" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">2 - Developing</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Partial evidence of research from one or more sources</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="identify_research" value="3" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">3 - Accomplished</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Clear, detailed research from a variety of sources</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="identify_research" value="4" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">4 - Exceeds</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Exceeds Accomplished criteria</p>
+                                </label>
+                            </div>
+                            <div id="exceeds_identify_research" class="hidden mt-3 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+                                <label class="block text-xs font-semibold text-emerald-800 dark:text-emerald-300 mb-1">
+                                    <i class="fa-solid fa-pen mr-1"></i> How has the team exceeded in Research? <span class="text-red-500">*</span>
+                                </label>
+                                <textarea rows="2" placeholder="Required: Detail specific accomplishments..." class="w-full text-xs p-2 bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:text-white exceeds-input-print"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: DESIGN -->
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden print-break-inside-avoid">
+                    <div class="bg-slate-50 dark:bg-slate-800/80 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-8 bg-fll-red rounded-full inline-block"></span>
+                            <h3 class="font-black text-slate-900 dark:text-white tracking-wide text-base uppercase">2. DESIGN</h3>
+                        </div>
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Project planning & inclusive team development</span>
+                    </div>
+
+                    <div class="p-5 space-y-6">
+                        <!-- Design - Row 1 -->
+                        <div class="rubric-row" data-category="DESIGN" data-criterion="Project Plan">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                                    Project Plan
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="design_plan" value="1" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">1 - Beginning</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Minimal evidence of an effective project plan</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="design_plan" value="2" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">2 - Developing</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Partial evidence of an effective project plan</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="design_plan" value="3" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">3 - Accomplished</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Clear evidence of an effective project plan</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="design_plan" value="4" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">4 - Exceeds</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Exceeds Accomplished criteria</p>
+                                </label>
+                            </div>
+                            <div id="exceeds_design_plan" class="hidden mt-3 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+                                <label class="block text-xs font-semibold text-emerald-800 dark:text-emerald-300 mb-1">
+                                    <i class="fa-solid fa-pen mr-1"></i> How has the team exceeded in Project Plan? <span class="text-red-500">*</span>
+                                </label>
+                                <textarea rows="2" placeholder="Required: Detail specific accomplishments..." class="w-full text-xs p-2 bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:text-white exceeds-input-print"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Design - Row 2 (Dual Core Values) -->
+                        <div class="rubric-row pt-4 border-t border-slate-100 dark:border-slate-700/60" data-category="DESIGN" data-criterion="Teamwork / Involvement" data-dual="true">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center">
+                                    Teamwork / Involvement
+                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                                        <i class="fa-solid fa-star text-amber-500 mr-1"></i> Dual Core Values Criteria
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="design_teamwork" value="1" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">1 - Beginning</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Minimal evidence that development process involved all team members</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="design_teamwork" value="2" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">2 - Developing</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Partial evidence that development process involved all team members</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="design_teamwork" value="3" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">3 - Accomplished</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Clear evidence that development process involved all team members</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="design_teamwork" value="4" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">4 - Exceeds</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Exceeds Accomplished criteria</p>
+                                </label>
+                            </div>
+                            <div id="exceeds_design_teamwork" class="hidden mt-3 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+                                <label class="block text-xs font-semibold text-emerald-800 dark:text-emerald-300 mb-1">
+                                    <i class="fa-solid fa-pen mr-1"></i> How has the team exceeded in Teamwork / Involvement? <span class="text-red-500">*</span>
+                                </label>
+                                <textarea rows="2" placeholder="Required: Detail specific accomplishments..." class="w-full text-xs p-2 bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:text-white exceeds-input-print"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 3: CREATE -->
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden print-break-inside-avoid">
+                    <div class="bg-slate-50 dark:bg-slate-800/80 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-8 bg-fll-yellow rounded-full inline-block"></span>
+                            <h3 class="font-black text-slate-900 dark:text-white tracking-wide text-base uppercase">3. CREATE</h3>
+                        </div>
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Original idea & prototype model/drawing</span>
+                    </div>
+
+                    <div class="p-5 space-y-6">
+                        <!-- Create - Row 1 -->
+                        <div class="rubric-row" data-category="CREATE" data-criterion="Innovation Explanation">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                                    Innovation Explanation
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="create_innovation" value="1" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">1 - Beginning</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Minimal explanation of innovation in solution</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="create_innovation" value="2" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">2 - Developing</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Simple explanation of innovation in solution</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="create_innovation" value="3" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">3 - Accomplished</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Detailed explanation of innovation in solution</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="create_innovation" value="4" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">4 - Exceeds</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Exceeds Accomplished criteria</p>
+                                </label>
+                            </div>
+                            <div id="exceeds_create_innovation" class="hidden mt-3 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+                                <label class="block text-xs font-semibold text-emerald-800 dark:text-emerald-300 mb-1">
+                                    <i class="fa-solid fa-pen mr-1"></i> How has the team exceeded in Innovation Explanation? <span class="text-red-500">*</span>
+                                </label>
+                                <textarea rows="2" placeholder="Required: Detail specific accomplishments..." class="w-full text-xs p-2 bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:text-white exceeds-input-print"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Create - Row 2 -->
+                        <div class="rubric-row pt-4 border-t border-slate-100 dark:border-slate-700/60" data-category="CREATE" data-criterion="Model / Drawing">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                                    Model / Drawing
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="create_model" value="1" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">1 - Beginning</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Unclear model/drawing that represents the solution</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="create_model" value="2" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">2 - Developing</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Simple model/drawing that represents the solution</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="create_model" value="3" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">3 - Accomplished</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Detailed model/drawing that represents the solution</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="create_model" value="4" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">4 - Exceeds</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Exceeds Accomplished criteria</p>
+                                </label>
+                            </div>
+                            <div id="exceeds_create_model" class="hidden mt-3 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+                                <label class="block text-xs font-semibold text-emerald-800 dark:text-emerald-300 mb-1">
+                                    <i class="fa-solid fa-pen mr-1"></i> How has the team exceeded in Model / Drawing? <span class="text-red-500">*</span>
+                                </label>
+                                <textarea rows="2" placeholder="Required: Detail specific accomplishments..." class="w-full text-xs p-2 bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:text-white exceeds-input-print"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 4: ITERATE -->
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden print-break-inside-avoid">
+                    <div class="bg-slate-50 dark:bg-slate-800/80 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-8 bg-purple-600 rounded-full inline-block"></span>
+                            <h3 class="font-black text-slate-900 dark:text-white tracking-wide text-base uppercase">4. ITERATE</h3>
+                        </div>
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Sharing ideas, gathering feedback & solution improvements</span>
+                    </div>
+
+                    <div class="p-5 space-y-6">
+                        <!-- Iterate - Row 1 -->
+                        <div class="rubric-row" data-category="ITERATE" data-criterion="Sharing">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                                    Sharing
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="iterate_sharing" value="1" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">1 - Beginning</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Minimal sharing of their solution with others</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="iterate_sharing" value="2" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">2 - Developing</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Solution shared with at least one person/group</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="iterate_sharing" value="3" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">3 - Accomplished</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Solution shared with multiple people/groups</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="iterate_sharing" value="4" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">4 - Exceeds</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Exceeds Accomplished criteria</p>
+                                </label>
+                            </div>
+                            <div id="exceeds_iterate_sharing" class="hidden mt-3 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+                                <label class="block text-xs font-semibold text-emerald-800 dark:text-emerald-300 mb-1">
+                                    <i class="fa-solid fa-pen mr-1"></i> How has the team exceeded in Sharing? <span class="text-red-500">*</span>
+                                </label>
+                                <textarea rows="2" placeholder="Required: Detail specific accomplishments..." class="w-full text-xs p-2 bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:text-white exceeds-input-print"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Iterate - Row 2 (Dual Core Values) -->
+                        <div class="rubric-row pt-4 border-t border-slate-100 dark:border-slate-700/60" data-category="ITERATE" data-criterion="Feedback & Improvements" data-dual="true">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center">
+                                    Feedback & Improvements
+                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                                        <i class="fa-solid fa-star text-amber-500 mr-1"></i> Dual Core Values Criteria
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="iterate_feedback" value="1" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">1 - Beginning</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Minimal evidence of improvements based on feedback</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="iterate_feedback" value="2" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">2 - Developing</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Partial evidence of improvements based on feedback</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="iterate_feedback" value="3" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">3 - Accomplished</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Clear evidence of improvements based on feedback</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="iterate_feedback" value="4" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">4 - Exceeds</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Exceeds Accomplished criteria</p>
+                                </label>
+                            </div>
+                            <div id="exceeds_iterate_feedback" class="hidden mt-3 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+                                <label class="block text-xs font-semibold text-emerald-800 dark:text-emerald-300 mb-1">
+                                    <i class="fa-solid fa-pen mr-1"></i> How has the team exceeded in Feedback & Improvements? <span class="text-red-500">*</span>
+                                </label>
+                                <textarea rows="2" placeholder="Required: Detail specific accomplishments..." class="w-full text-xs p-2 bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:text-white exceeds-input-print"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 5: COMMUNICATE -->
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden print-break-inside-avoid">
+                    <div class="bg-slate-50 dark:bg-slate-800/80 px-5 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-8 bg-emerald-500 rounded-full inline-block"></span>
+                            <h3 class="font-black text-slate-900 dark:text-white tracking-wide text-base uppercase">5. COMMUNICATE</h3>
+                        </div>
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Effective presentation, impact explanation & enthusiasm</span>
+                    </div>
+
+                    <div class="p-5 space-y-6">
+                        <!-- Communicate - Row 1 -->
+                        <div class="rubric-row" data-category="COMMUNICATE" data-criterion="Solution & Impact Explanation">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                                    Solution & Impact Explanation
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="communicate_impact" value="1" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">1 - Beginning</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Unclear explanation of the solution and its potential impact on others</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="communicate_impact" value="2" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">2 - Developing</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Partially clear explanation of solution and its potential impact on others</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="communicate_impact" value="3" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">3 - Accomplished</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Clear explanation of solution and its potential impact on others</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="communicate_impact" value="4" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">4 - Exceeds</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Exceeds Accomplished criteria</p>
+                                </label>
+                            </div>
+                            <div id="exceeds_communicate_impact" class="hidden mt-3 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+                                <label class="block text-xs font-semibold text-emerald-800 dark:text-emerald-300 mb-1">
+                                    <i class="fa-solid fa-pen mr-1"></i> How has the team exceeded in Solution & Impact Explanation? <span class="text-red-500">*</span>
+                                </label>
+                                <textarea rows="2" placeholder="Required: Detail specific accomplishments..." class="w-full text-xs p-2 bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:text-white exceeds-input-print"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Communicate - Row 2 (Dual Core Values) -->
+                        <div class="rubric-row pt-4 border-t border-slate-100 dark:border-slate-700/60" data-category="COMMUNICATE" data-criterion="Pride / Enthusiasm" data-dual="true">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center">
+                                    Pride / Enthusiasm
+                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                                        <i class="fa-solid fa-star text-amber-500 mr-1"></i> Dual Core Values Criteria
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="communicate_pride" value="1" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">1 - Beginning</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Presentation shows minimal pride or enthusiasm for their work</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="communicate_pride" value="2" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">2 - Developing</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Presentation shows partial pride or enthusiasm for their work</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="communicate_pride" value="3" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">3 - Accomplished</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Presentation clearly shows pride or enthusiasm for their work</p>
+                                </label>
+                                <label class="rubric-option cursor-pointer relative border dark:border-slate-700 rounded-lg p-3 bg-slate-50 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600">
+                                    <input type="radio" name="communicate_pride" value="4" onchange="updateScore()" class="sr-only">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">4 - Exceeds</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300">Exceeds Accomplished criteria</p>
+                                </label>
+                            </div>
+                            <div id="exceeds_communicate_pride" class="hidden mt-3 p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+                                <label class="block text-xs font-semibold text-emerald-800 dark:text-emerald-300 mb-1">
+                                    <i class="fa-solid fa-pen mr-1"></i> How has the team exceeded in Pride / Enthusiasm? <span class="text-red-500">*</span>
+                                </label>
+                                <textarea rows="2" placeholder="Required: Detail specific accomplishments..." class="w-full text-xs p-2 bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:text-white exceeds-input-print"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-        </form>
+            <!-- Right Column: Live Scoring Scorecard & Core Values Breakdown -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="sticky top-20 space-y-6">
+
+                    <!-- Score Overview Card -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 p-5 overflow-hidden">
+                        <div class="border-b border-slate-100 dark:border-slate-700 pb-3 mb-4">
+                            <h3 class="font-bold text-slate-900 dark:text-white text-sm flex items-center">
+                                <i class="fa-solid fa-calculator text-fll-red mr-2"></i> Scoring Summary
+                            </h3>
+                        </div>
+
+                        <!-- Main Innovation Score Display -->
+                        <div class="text-center bg-slate-50 dark:bg-slate-900/80 rounded-xl p-4 border border-slate-200 dark:border-slate-700/80 mb-4">
+                            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 block uppercase tracking-wider">Innovation Score</span>
+                            <div class="my-1 flex items-baseline justify-center">
+                                <span id="total-score" class="text-4xl font-black text-fll-blue dark:text-blue-400">0</span>
+                                <span class="text-slate-400 text-lg font-bold"> / 40</span>
+                            </div>
+                            <!-- Percentage Bar -->
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden mt-2">
+                                <div id="score-progress-bar" class="bg-fll-blue h-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                            <div class="text-right text-[11px] text-slate-500 mt-1 font-medium" id="score-percent">0% Completed</div>
+                        </div>
+
+                        <!-- Core Values Dual Indicator Summary -->
+                        <div class="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-4 border border-amber-200 dark:border-amber-800/50 mb-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-amber-900 dark:text-amber-300 flex items-center">
+                                    <i class="fa-solid fa-star text-amber-500 mr-1.5"></i> Core Values Dual Score
+                                </span>
+                                <span id="core-values-score" class="text-xs font-bold px-2 py-0.5 bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100 rounded-full">0 / 12</span>
+                            </div>
+                            <p class="text-[11px] text-amber-800 dark:text-amber-300/80 leading-relaxed">
+                                Criteria with stars count dually toward Core Values awards rankings (25% of Champion's Score).
+                            </p>
+                        </div>
+
+                        <!-- Completion Status Badge -->
+                        <div id="completion-status" class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-center">
+                            <span class="text-xs font-bold text-red-700 dark:text-red-300 flex items-center justify-center">
+                                <i class="fa-solid fa-triangle-exclamation mr-1.5"></i> <span id="completion-text">10 of 10 Criteria Remaining</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Category Breakdown Card -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 no-print">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Category Breakdown</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="font-medium text-slate-700 dark:text-slate-300">Identify</span>
+                                    <span id="cat-identify" class="font-bold">0 / 8</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                                    <div id="bar-identify" class="bg-fll-blue h-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="font-medium text-slate-700 dark:text-slate-300">Design</span>
+                                    <span id="cat-design" class="font-bold">0 / 8</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                                    <div id="bar-design" class="bg-fll-red h-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="font-medium text-slate-700 dark:text-slate-300">Create</span>
+                                    <span id="cat-create" class="font-bold">0 / 8</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                                    <div id="bar-create" class="bg-fll-yellow h-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="font-medium text-slate-700 dark:text-slate-300">Iterate</span>
+                                    <span id="cat-iterate" class="font-bold">0 / 8</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                                    <div id="bar-iterate" class="bg-purple-600 h-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span class="font-medium text-slate-700 dark:text-slate-300">Communicate</span>
+                                    <span id="cat-communicate" class="font-bold">0 / 8</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                                    <div id="bar-communicate" class="bg-emerald-500 h-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
     </main>
 
     <script>
-        // --- Rubric Data Definition ---
-        const rubricData = [
-            {
-                id: "identify",
-                category: "IDENTIFY",
-                title: "Team had a clearly defined problem that was well researched.",
-                levels: [
-                    "Unclear definition of the problem",
-                    "Partially clear definition of the problem",
-                    "Clear definition of the problem",
-                    "Minimal evidence of research",
-                    "Partial evidence of research from one or more sources",
-                    "Clear, detailed research from a variety of sources"
-                ]
-            },
-            {
-                id: "design",
-                category: "DESIGN",
-                title: "Team worked together while creating a project plan and developing their ideas.",
-                levels: [
-                    "Minimal evidence of an effective project plan",
-                    "Partial evidence of an effective project plan",
-                    "Clear evidence of an effective project plan",
-                    "Minimal evidence that development process involved all team members",
-                    "Partial evidence that development process involved all team members",
-                    "Clear evidence that development process involved all team members"
-                ]
-            },
-            {
-                id: "create",
-                category: "CREATE",
-                title: "Team developed an original idea or built on an existing one with a prototype model/drawing to represent their solution.",
-                levels: [
-                    "Minimal explanation of innovation in solution",
-                    "Simple explanation of innovation in solution",
-                    "Detailed explanation of innovation in solution",
-                    "Unclear model/drawing that represents the solution",
-                    "Simple model/drawing that represents the solution",
-                    "Detailed model/drawing that represents the solution"
-                ]
-            },
-            {
-                id: "iterate",
-                category: "ITERATE",
-                title: "Team shared their ideas with others, collected feedback, and included improvements to their solution.",
-                levels: [
-                    "Minimal sharing of their solution with others",
-                    "Solution shared with at least one person/group",
-                    "Solution shared with multiple people/groups",
-                    "Minimal evidence of improvements based on feedback",
-                    "Partial evidence of improvements based on feedback",
-                    "Clear evidence of improvements based on feedback"
-                ]
-            },
-            {
-                id: "communicate",
-                category: "COMMUNICATE",
-                title: "Team shared an effective presentation of their solution, its impact on others, and celebrated their team's progress.",
-                levels: [
-                    "Unclear explanation of solution and its potential impact on others",
-                    "Partially clear explanation of solution and its potential impact on others",
-                    "Clear explanation of solution and its potential impact on others",
-                    "Presentation shows minimal pride or enthusiasm for their work",
-                    "Presentation shows partial pride or enthusiasm for their work",
-                    "Presentation clearly shows pride or enthusiasm for their work"
-                ]
-            }
+        // Rubric Group Constants
+        const criterionRadioGroups = [
+            'identify_problem',
+            'identify_research',
+            'design_plan',
+            'design_teamwork',
+            'create_innovation',
+            'create_model',
+            'iterate_sharing',
+            'iterate_feedback',
+            'communicate_impact',
+            'communicate_pride'
         ];
 
-        // --- Render Rubric UI ---
-        function renderRubric() {
-            const container = document.getElementById("rubric-criteria");
-            container.innerHTML = "";
+        const dualCriteriaGroups = [
+            'design_teamwork',
+            'iterate_feedback',
+            'communicate_pride'
+        ];
 
-            rubricData.forEach((item, index) => {
-                const card = document.createElement("div");
-                card.className = "bg-white rounded-xl shadow-md p-6 border border-slate-200 rubric-card";
-                
-                card.innerHTML = `
-                    <div class="border-b border-slate-200 pb-3 mb-4">
-                        <span class="text-xs font-black text-blue-600 tracking-wider uppercase">Criterion ${index + 1}</span>
-                        <h3 class="text-xl font-bold text-slate-800">${item.category}</h3>
-                        <p class="text-sm text-slate-600 mt-0.5">${item.title}</p>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
-                        <!-- Level 1 -->
-                        <label class="border border-slate-200 rounded-lg p-3 cursor-pointer hover:border-blue-400 transition flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">1 - Beginning</span>
-                                    <input type="radio" name="${item.id}" value="1" onchange="calculateScore()" class="w-4 h-4 text-blue-600">
-                                </div>
-                                <ul class="text-xs text-slate-600 space-y-1.5 list-disc pl-4">
-                                    <li>${item.levels[0]}</li>
-                                    <li>${item.levels[3]}</li>
-                                </ul>
-                            </div>
-                        </label>
-
-                        <!-- Level 2 -->
-                        <label class="border border-slate-200 rounded-lg p-3 cursor-pointer hover:border-blue-400 transition flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-0.5 rounded">2 - Developing</span>
-                                    <input type="radio" name="${item.id}" value="2" onchange="calculateScore()" class="w-4 h-4 text-blue-600">
-                                </div>
-                                <ul class="text-xs text-slate-600 space-y-1.5 list-disc pl-4">
-                                    <li>${item.levels[1]}</li>
-                                    <li>${item.levels[4]}</li>
-                                </ul>
-                            </div>
-                        </label>
-
-                        <!-- Level 3 -->
-                        <label class="border border-slate-200 rounded-lg p-3 cursor-pointer hover:border-blue-400 transition flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">3 - Accomplished</span>
-                                    <input type="radio" name="${item.id}" value="3" onchange="calculateScore()" class="w-4 h-4 text-blue-600">
-                                </div>
-                                <ul class="text-xs text-slate-600 space-y-1.5 list-disc pl-4">
-                                    <li>${item.levels[2]}</li>
-                                    <li>${item.levels[5]}</li>
-                                </ul>
-                            </div>
-                        </label>
-
-                        <!-- Level 4 -->
-                        <label class="border border-slate-200 rounded-lg p-3 cursor-pointer hover:border-blue-400 transition flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold bg-purple-50 text-purple-700 px-2 py-0.5 rounded">4 - Exceeds</span>
-                                    <input type="radio" name="${item.id}" value="4" onchange="calculateScore()" class="w-4 h-4 text-blue-600">
-                                </div>
-                                <p class="text-xs text-slate-600 italic">Exceeds standard expectations for this age group.</p>
-                            </div>
-                        </label>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">How has the team exceeded? (Required if Level 4 is selected)</label>
-                        <textarea id="exceeds-${item.id}" rows="2" placeholder="Provide specific feedback on how the team exceeded expectations..." class="w-full bg-slate-50 border border-slate-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
-                    </div>
-                `;
-
-                container.appendChild(card);
-            });
-        }
-
-        // --- Calculation Logic ---
-        function calculateScore() {
-            let total = 0;
-            rubricData.forEach(item => {
-                const selected = document.querySelector(`input[name="${item.id}"]:checked`);
-                if (selected) {
-                    total += parseInt(selected.value, 10);
-                }
-            });
-
-            const max = rubricData.length * 4;
-            const percentage = Math.round((total / max) * 100);
-            document.getElementById("total-score-display").innerHTML = `${total} /${max} <span class="text-lg font-normal text-slate-500">(${percentage}%)</span>`;
-        }
-
-        // --- Form Actions ---
-        function handleFormSubmit(e) {
-            e.preventDefault();
-
-            const teamNum = document.getElementById("team-number").value;
-            const teamName = document.getElementById("team-name").value;
-            const room = document.getElementById("judging-room").value;
-
-            document.getElementById("print-team-info").innerText = `Team #${teamNum} - ${teamName} \vert{} Room:${room || 'N/A'}`;
-
-            // Trigger Browser Print/PDF Dialog automatically
-            window.print();
-        }
-
-        function resetForm() {
-            if (confirm("Are you sure you want to clear all scores and details?")) {
-                document.getElementById("rubric-form").reset();
-                calculateScore();
-            }
-        }
-
-        // --- 5-Minute Audio/Visual Timer Code ---
-        let timerSeconds = 300;
+        /* ========================================================
+           5-MINUTE PRESENTATION TIMER & WEB AUDIO API LOGIC
+           ======================================================== */
+        let timerSeconds = 300;       // Default 5 Minutes
+        let initialPresetSeconds = 300;
         let timerInterval = null;
-        let isRunning = false;
+        let isTimerRunning = false;
+        let isSoundMuted = false;
 
-        function updateTimerDisplay() {
-            const minutes = Math.floor(timerSeconds / 60);
-            const seconds = timerSeconds % 60;
-            const formatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            document.getElementById("timer-display").innerText = formatted;
+        // Web Audio API Synthesizer (No external audio file dependencies)
+        function playAlarmSound() {
+            if (isSoundMuted) return;
 
-            const card = document.getElementById("timer-card");
-            if (timerSeconds <= 60 && timerSeconds > 0) {
-                card.classList.add("timer-warning");
-            } else {
-                card.classList.remove("timer-warning");
-            }
-        }
-
-        function toggleTimer() {
-            if (isRunning) {
-                pauseTimer();
-            } else {
-                startTimer();
-            }
-        }
-
-        function startTimer() {
-            if (timerSeconds <= 0) return;
-            isRunning = true;
-            document.getElementById("btn-start-label").innerText = "Pause";
-            document.getElementById("play-icon").innerHTML = '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>';
-
-            timerInterval = setInterval(() => {
-                timerSeconds--;
-                updateTimerDisplay();
-
-                if (timerSeconds <= 0) {
-                    clearInterval(timerInterval);
-                    isRunning = false;
-                    playAudioAlert();
-                    alert("Time's Up!");
-                    document.getElementById("btn-start-label").innerText = "Start";
-                }
-            }, 1000);
-        }
-
-        function pauseTimer() {
-            clearInterval(timerInterval);
-            isRunning = false;
-            document.getElementById("btn-start-label").innerText = "Start";
-            document.getElementById("play-icon").innerHTML = '<path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.333-5.89a1.5 1.5 0 000-2.538L6.3 2.841z"></path>';
-        }
-
-        function resetTimer() {
-            pauseTimer();
-            timerSeconds = 300;
-            updateTimerDisplay();
-        }
-
-        function setPreset(seconds) {
-            pauseTimer();
-            timerSeconds = seconds;
-            updateTimerDisplay();
-        }
-
-        // Web Audio API Sound Synthesizer (No external sound file required)
-        function playAudioAlert() {
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
                 const ctx = new AudioContext();
-                
+
+                // Beep pattern sequence: 3 energetic alert beeps
                 const now = ctx.currentTime;
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
+                
+                // Beep 1
+                const osc1 = ctx.createOscillator();
+                const gain1 = ctx.createGain();
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(880, now); // A5 note
+                gain1.gain.setValueAtTime(0.3, now);
+                gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                osc1.connect(gain1);
+                gain1.connect(ctx.destination);
+                osc1.start(now);
+                osc1.stop(now + 0.25);
 
-                osc.type = "sine";
-                osc.frequency.setValueAtTime(880, now); // Tone A5
-                osc.frequency.setValueAtTime(1200, now + 0.2);
+                // Beep 2
+                const osc2 = ctx.createOscillator();
+                const gain2 = ctx.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(880, now + 0.3);
+                gain2.gain.setValueAtTime(0.3, now + 0.3);
+                gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+                osc2.connect(gain2);
+                gain2.connect(ctx.destination);
+                osc2.start(now + 0.3);
+                osc2.stop(now + 0.55);
 
-                gain.gain.setValueAtTime(0.3, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                // Beep 3 (Longer tone)
+                const osc3 = ctx.createOscillator();
+                const gain3 = ctx.createGain();
+                osc3.type = 'triangle';
+                osc3.frequency.setValueAtTime(1046.50, now + 0.6); // C6 note
+                gain3.gain.setValueAtTime(0.4, now + 0.6);
+                gain3.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+                osc3.connect(gain3);
+                gain3.connect(ctx.destination);
+                osc3.start(now + 0.6);
+                osc3.stop(now + 1.2);
 
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-
-                osc.start(now);
-                osc.stop(now + 0.8);
-            } catch (e) {
-                console.log("Audio play blocked or unsupported:", e);
+            } catch (err) {
+                console.warn('Web Audio API not supported or context blocked', err);
             }
         }
 
-        // Initialize App
-        window.addEventListener("DOMContentLoaded", () => {
-            renderRubric();
-            updateTimerDisplay();
-        });
+        // Toggle Sound Mute State
+        function toggleSound() {
+            isSoundMuted = !isSoundMuted;
+            const icon = document.getElementById('sound-icon');
+            const btn = document.getElementById('sound-toggle-btn');
+            if (isSoundMuted) {
+                icon.className = 'fa-solid fa-volume-xmark text-sm text-red-500';
+                btn.classList.add('bg-red-50', 'dark:bg-red-950/40');
+                showToast('Timer audio alert muted', 'info');
+            } else {
+                icon.className = 'fa-solid fa-volume-high text-sm';
+                btn.classList.remove('bg-red-50', 'dark:bg-red-950/40');
+                showToast('Timer audio alert enabled', 'info');
+            }
+        }
+
+        // Format Seconds to MM:SS
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Render Timer UI Updates
+        function updateTimerUI() {
+            const display = document.getElementById('timer-display');
+            const badge = document.getElementById('timer-status-badge');
+            const card = document.getElementById('timer-card');
+            const iconBg = document.getElementById('timer-icon-bg');
+            const playIcon = document.getElementById('timer-play-icon');
+            const playText = document.getElementById('timer-play-text');
+
+            display.innerText = formatTime(timerSeconds);
+
+            // Time State Visual Effects
+            if (timerSeconds === 0) {
+                display.className = 'font-mono font-black text-3xl sm:text-4xl tracking-wider text-red-500 timer-finished';
+                badge.innerText = 'Time Up!';
+                badge.className = 'px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-red-100 text-red-700 dark:bg-red-900/60 dark:text-red-300';
+                card.classList.add('border-red-500', 'bg-red-50/20');
+                iconBg.className = 'w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-xl';
+            } else if (timerSeconds <= 60 && isTimerRunning) {
+                display.className = 'font-mono font-black text-3xl sm:text-4xl tracking-wider text-amber-400 timer-warning';
+                badge.innerText = 'Final Minute';
+                badge.className = 'px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300';
+                card.classList.remove('border-red-500', 'bg-red-50/20');
+                iconBg.className = 'w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl';
+            } else if (isTimerRunning) {
+                display.className = 'font-mono font-black text-3xl sm:text-4xl tracking-wider text-emerald-400';
+                badge.innerText = 'Running';
+                badge.className = 'px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300';
+                card.classList.remove('border-red-500', 'bg-red-50/20');
+                iconBg.className = 'w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl';
+            } else {
+                display.className = 'font-mono font-black text-3xl sm:text-4xl tracking-wider text-blue-400';
+                badge.innerText = timerSeconds === initialPresetSeconds ? 'Ready' : 'Paused';
+                badge.className = 'px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300';
+                card.classList.remove('border-red-500', 'bg-red-50/20');
+                iconBg.className = 'w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-fll-blue dark:text-blue-400 flex items-center justify-center text-xl';
+            }
+
+            // Update Start/Pause Button Text
+            if (isTimerRunning) {
+                playIcon.className = 'fa-solid fa-pause mr-1.5';
+                playText.innerText = 'Pause';
+            } else {
+                playIcon.className = 'fa-solid fa-play mr-1.5';
+                playText.innerText = timerSeconds === 0 ? 'Restart' : 'Start';
+            }
+        }
+
+        // Toggle Start / Pause
+        function toggleTimer() {
+            if (timerSeconds === 0) {
+                resetTimer();
+            }
+
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+            } else {
+                isTimerRunning = true;
+                timerInterval = setInterval(() => {
+                    if (timerSeconds > 0) {
+                        timerSeconds--;
+                        updateTimerUI();
+                        if (timerSeconds === 0) {
+                            clearInterval(timerInterval);
+                            isTimerRunning = false;
+                            playAlarmSound();
+                            showToast('Presentation Time is Up!', 'error');
+                            updateTimerUI();
+                        }
+                    }
+                }, 1000);
+            }
+            updateTimerUI();
+        }
+
+        // Reset Timer
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerSeconds = initialPresetSeconds;
+            updateTimerUI();
+        }
+
+        // Set Preset Time
+        function setTimerPreset(seconds) {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            initialPresetSeconds = seconds;
+            timerSeconds = seconds;
+            updateTimerUI();
+            showToast(`Timer set to ${formatTime(seconds)}`, 'info');
+        }
+
+        // Prompt Custom Time
+        function setCustomTimer() {
+            const minsInput = prompt('Enter timer length in minutes (e.g. 5 or 2.5):', '5');
+            if (minsInput !== null) {
+                const parsedMins = parseFloat(minsInput);
+                if (!isNaN(parsedMins) && parsedMins > 0) {
+                    const secs = Math.round(parsedMins * 60);
+                    setTimerPreset(secs);
+                } else {
+                    showToast('Invalid time entered', 'error');
+                }
+            }
+        }
+
+        /* ========================================================
+           INTERACTIVE RUBRIC SCORING & THEME LOGIC
+           ======================================================== */
+
+        // Toggle Dark/Light Mode
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.className = 'fa-solid fa-moon text-base';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                icon.className = 'fa-solid fa-sun text-base';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Initialize Theme
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-icon').className = 'fa-solid fa-sun text-base';
+        }
+
+        // Live Scoring and Exceeds Area Toggling
+        function updateScore() {
+            let totalScore = 0;
+            let totalCoreValuesScore = 0;
+            let selectedCount = 0;
+
+            const categoryScores = {
+                'IDENTIFY': 0,
+                'DESIGN': 0,
+                'CREATE': 0,
+                'ITERATE': 0,
+                'COMMUNICATE': 0
+            };
+
+            criterionRadioGroups.forEach(groupName => {
+                const selected = document.querySelector(`input[name="${groupName}"]:checked`);
+                const exceedsBox = document.getElementById(`exceeds_${groupName}`);
+
+                // Update Radio Visual Styling
+                const radios = document.querySelectorAll(`input[name="${groupName}"]`);
+                radios.forEach(radio => {
+                    const label = radio.closest('label');
+                    if (radio.checked) {
+                        label.classList.add('ring-2', 'ring-fll-blue', 'bg-blue-50/80', 'dark:bg-blue-900/30', 'rubric-card-selected');
+                    } else {
+                        label.classList.remove('ring-2', 'ring-fll-blue', 'bg-blue-50/80', 'dark:bg-blue-900/30', 'rubric-card-selected');
+                    }
+                });
+
+                if (selected) {
+                    const val = parseInt(selected.value, 10);
+                    totalScore += val;
+                    selectedCount++;
+
+                    const category = groupName.split('_')[0].toUpperCase();
+                    if (category === 'IDENTIFY') categoryScores['IDENTIFY'] += val;
+                    if (category === 'DESIGN') categoryScores['DESIGN'] += val;
+                    if (category === 'CREATE') categoryScores['CREATE'] += val;
+                    if (category === 'ITERATE') categoryScores['ITERATE'] += val;
+                    if (category === 'COMMUNICATE') categoryScores['COMMUNICATE'] += val;
+
+                    if (dualCriteriaGroups.includes(groupName)) {
+                        totalCoreValuesScore += val;
+                    }
+
+                    if (exceedsBox) {
+                        if (val === 4) {
+                            exceedsBox.classList.remove('hidden');
+                        } else {
+                            exceedsBox.classList.add('hidden');
+                        }
+                    }
+                } else {
+                    if (exceedsBox) exceedsBox.classList.add('hidden');
+                }
+            });
+
+            // Update DOM Displays
+            document.getElementById('total-score').innerText = totalScore;
+            const progressPercent = Math.round((selectedCount / criterionRadioGroups.length) * 100);
+            document.getElementById('score-progress-bar').style.width = `${(totalScore / 40) * 100}%`;
+            document.getElementById('score-percent').innerText = `${progressPercent}% Completed (${selectedCount}/10)`;
+
+            document.getElementById('core-values-score').innerText = `${totalCoreValuesScore} / 12`;
+
+            const statusDiv = document.getElementById('completion-status');
+            const statusText = document.getElementById('completion-text');
+            if (selectedCount === 10) {
+                statusDiv.className = "p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg text-center";
+                statusText.className = "text-xs font-bold text-emerald-700 dark:text-emerald-300 flex items-center justify-center";
+                statusText.innerHTML = '<i class="fa-solid fa-circle-check mr-1.5"></i> All Criteria Completed!';
+            } else {
+                statusDiv.className = "p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-center";
+                statusText.className = "text-xs font-bold text-red-700 dark:text-red-300 flex items-center justify-center";
+                statusText.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5"></i> ${10 - selectedCount} of 10 Criteria Remaining`;
+            }
+
+            Object.keys(categoryScores).forEach(cat => {
+                const score = categoryScores[cat];
+                const catLower = cat.toLowerCase();
+                document.getElementById(`cat-${catLower}`).innerText = `${score} / 8`;
+                document.getElementById(`bar-${catLower}`).style.width = `${(score / 8) * 100}%`;
+            });
+        }
+
+        // Quick Preset: Set All to Accomplished (3)
+        function setAllAccomplished() {
+            criterionRadioGroups.forEach(groupName => {
+                const radio = document.querySelector(`input[name="${groupName}"][value="3"]`);
+                if (radio) radio.checked = true;
+            });
+            updateScore();
+            showToast('All criteria set to Accomplished (3)', 'success');
+        }
+
+        // Quick Reset
+        function resetRubric() {
+            if (confirm('Are you sure you want to reset all rubric selections and fields?')) {
+                criterionRadioGroups.forEach(groupName => {
+                    const radios = document.querySelectorAll(`input[name="${groupName}"]`);
+                    radios.forEach(r => r.checked = false);
+                    const exceedsArea = document.querySelector(`#exceeds_${groupName} textarea`);
+                    if (exceedsArea) exceedsArea.value = '';
+                });
+                document.getElementById('teamNumber').value = '';
+                document.getElementById('teamName').value = '';
+                document.getElementById('judgingRoom').value = '';
+                document.getElementById('judgeNotes').value = '';
+                updateScore();
+                resetTimer();
+                showToast('Rubric reset successfully', 'info');
+            }
+        }
+
+        // Export Results to CSV File
+        function exportCSV() {
+            const teamNum = document.getElementById('teamNumber').value || 'N/A';
+            const teamName = document.getElementById('teamName').value || 'N/A';
+            const room = document.getElementById('judgingRoom').value || 'N/A';
+            const notes = (document.getElementById('judgeNotes').value || '').replace(/"/g, '""');
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Category,Criterion,Score,Exceeds Comments\n";
+
+            criterionRadioGroups.forEach(groupName => {
+                const selected = document.querySelector(`input[name="${groupName}"]:checked`);
+                const score = selected ? selected.value : "Unscored";
+                
+                const rowElem = document.querySelector(`input[name="${groupName}"]`).closest('.rubric-row');
+                const category = rowElem.getAttribute('data-category');
+                const criterion = rowElem.getAttribute('data-criterion');
+                
+                let comment = '';
+                if (score === "4") {
+                    const textarea = document.querySelector(`#exceeds_${groupName} textarea`);
+                    if (textarea) comment = `"${textarea.value.replace(/"/g, '""')}"`;
+                }
+
+                csvContent += `"${category}","${criterion}",${score},${comment}\n`;
+            });
+
+            csvContent += `\n"Metadata","Team Number","${teamNum}"\n`;
+            csvContent += `"Metadata","Team Name","${teamName}"\n`;
+            csvContent += `"Metadata","Judging Room","${room}"\n`;
+            csvContent += `"Metadata","Judge Notes","${notes}"\n`;
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `FLL_Rubric_${teamNum}_${teamName}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('CSV export downloaded', 'success');
+        }
+
+        // Export Results to JSON File
+        function exportJSON() {
+            const data = {
+                metadata: {
+                    teamNumber: document.getElementById('teamNumber').value,
+                    teamName: document.getElementById('teamName').value,
+                    judgingRoom: document.getElementById('judgingRoom').value,
+                    judgeNotes: document.getElementById('judgeNotes').value,
+                    timestamp: new Date().toISOString()
+                },
+                scores: {}
+            };
+
+            criterionRadioGroups.forEach(groupName => {
+                const selected = document.querySelector(`input[name="${groupName}"]:checked`);
+                const textarea = document.querySelector(`#exceeds_${groupName} textarea`);
+                data.scores[groupName] = {
+                    val: selected ? parseInt(selected.value, 10) : null,
+                    exceedsComment: textarea ? textarea.value : ''
+                };
+            });
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `FLL_Rubric_${data.metadata.teamNumber || 'Team'}.json`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+            showToast('JSON export created', 'success');
+        }
+
+        // Import Results from JSON File
+        function importJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.metadata) {
+                        document.getElementById('teamNumber').value = data.metadata.teamNumber || '';
+                        document.getElementById('teamName').value = data.metadata.teamName || '';
+                        document.getElementById('judgingRoom').value = data.metadata.judgingRoom || '';
+                        document.getElementById('judgeNotes').value = data.metadata.judgeNotes || '';
+                    }
+
+                    if (data.scores) {
+                        Object.keys(data.scores).forEach(groupName => {
+                            const scoreData = data.scores[groupName];
+                            if (scoreData.val) {
+                                const radio = document.querySelector(`input[name="${groupName}"][value="${scoreData.val}"]`);
+                                if (radio) radio.checked = true;
+                            }
+                            if (scoreData.exceedsComment) {
+                                const textarea = document.querySelector(`#exceeds_${groupName} textarea`);
+                                if (textarea) textarea.value = scoreData.exceedsComment;
+                            }
+                        });
+                    }
+                    updateScore();
+                    showToast('Rubric JSON imported successfully', 'success');
+                } catch (err) {
+                    showToast('Invalid JSON file format', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Toast Notification Helper
+        function showToast(msg, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMsg.innerText = msg;
+            if (type === 'success') {
+                toastIcon.className = 'fa-solid fa-circle-check text-emerald-400';
+            } else if (type === 'error') {
+                toastIcon.className = 'fa-solid fa-circle-xmark text-red-400';
+            } else {
+                toastIcon.className = 'fa-solid fa-circle-info text-blue-400';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 3000);
+        }
+
+        // Initialize Application State on Load
+        window.onload = function() {
+            updateScore();
+            updateTimerUI();
+        };
     </script>
 </body>
 </html>
