@@ -284,7 +284,7 @@ function buildPrint(){
   const out=document.getElementById("printOut");out.textContent="";
   const h=el("div","ph");
   h.appendChild(el("div","pt","FIRST LEGO League Challenge \u2013 Innovation Project"));
-  h.appendChild(el("div","pn","Team: "+(document.getElementById("teamName").value||"\u2014")));
+  h.appendChild(el("div","pn","Team: "+(document.getElementById("teamName").value||"\u2014")+"    |    Date: "+new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})));
   out.appendChild(h);
   const tb=el("table");
   const hd=el("tr");["Criteria","Level achieved","Result / comment"].forEach(t=>hd.appendChild(el("th",null,t)));tb.appendChild(hd);
