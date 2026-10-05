@@ -111,11 +111,23 @@ h1{margin:0 0 6px;font-size:36px;line-height:1;color:var(--title);letter-spacing
 }
 .lv{display:none;font-size:11px;opacity:.65;margin-right:4px}
 
-@page{size:letter;margin:.35in}
+#printOut{display:none;font:11px/1.3 Arial,sans-serif;color:#000}
+#printOut .pt{font-size:20px;font-weight:700}
+#printOut .pn{font-size:15px;margin:4px 0 10px}
+#printOut table{width:100%;border-collapse:collapse}
+#printOut th,#printOut td{border:1px solid #555;padding:4px 6px;text-align:left;vertical-align:top}
+#printOut th{background:#ddd}
+#printOut .pc{font-weight:700;width:14%}
+#printOut .pl{width:17%;white-space:nowrap}
+#printOut .pcm{margin-top:3px;font-style:italic}
+#printOut .pscore{margin-top:10px;font-size:14px;font-weight:700}
+#printOut .pgen{margin-top:10px;border:1px solid #555;padding:6px 8px;white-space:pre-wrap}
+#printOut .pgen b{display:block;margin-bottom:3px}
+@page{size:letter;margin:.5in}
 @media print{
  body{background:#fff}
- .timer,.acts,.status{display:none}
- .page{box-shadow:none;margin:0;padding:0;max-width:none}
+ body>*:not(#printOut){display:none!important}
+ #printOut{display:block}
  .cell:hover{background:#fff}
  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
  .exc textarea{resize:none}
@@ -186,6 +198,7 @@ h1{margin:0 0 6px;font-size:36px;line-height:1;color:var(--title);letter-spacing
   </div>
   <div class="status" id="status" role="status"></div>
 </main>
+<div id="printOut" aria-hidden="true"></div>
 
 <script>
 const DATA=[
@@ -232,7 +245,7 @@ DATA.forEach(c=>{
     ta.addEventListener("input",()=>{ROWS[i].c=ta.value;if(ta.value.trim())ex.classList.remove("err");});
     g.appendChild(ex);cells.push(ib);
     rw.appendChild(g);sheet.appendChild(rw);
-    ROWS.push({cv:r.cv,v:0,c:"",cells,ex,ta});
+    ROWS.push({cv:r.cv,v:0,c:"",cells,ex,ta,o:r.o,cat:c.t});
   });
 });
 function pick(i,k,mode){
@@ -264,24 +277,36 @@ function validate(needTeam){
   st.className=msg.length?"status bad":"status";st.textContent=msg.join(" ");
   return !msg.length;
 }
-/* Shrink the sheet to fit one Letter page when printing / saving as PDF */
-function fitToPage(){
-  const pg=document.querySelector(".page"),W=7.8*96,H=10.3*96*0.98;
-  const old=pg.getAttribute("style");
-  let z=1;
-  for(let n=0;n<6;n++){
-    pg.style.cssText="width:"+(W/z)+"px;max-width:none;margin:0;padding:0;box-shadow:none";
-    const h=pg.scrollHeight,nz=Math.min(1,H/h);
-    if(Math.abs(nz-z)<0.005){z=nz;break;}
-    z=nz;
-  }
-  pg.style.cssText=old||"";
-  pg.style.zoom=z;
+/* Printing: build a compact one-page summary of the submitted scores only */
+const LVN=["Beginning","Developing","Accomplished","Exceeds"];
+function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;}
+function buildPrint(){
+  const out=document.getElementById("printOut");out.textContent="";
+  const h=el("div","ph");
+  h.appendChild(el("div","pt","FIRST LEGO League Challenge \u2013 Innovation Project"));
+  h.appendChild(el("div","pn","Team: "+(document.getElementById("teamName").value||"\u2014")));
+  out.appendChild(h);
+  const tb=el("table");
+  const hd=el("tr");["Criteria","Level achieved","Result / comment"].forEach(t=>hd.appendChild(el("th",null,t)));tb.appendChild(hd);
+  let last="",s=0,cv=0;
+  ROWS.forEach(r=>{
+    const tr=el("tr");
+    const c0=el("td","pc",r.cat===last?"":r.cat);last=r.cat;
+    const c1=el("td","pl",r.v?(r.v+" \u2013 "+LVN[r.v-1]):"\u2014");
+    const c2=el("td");
+    const stmt=r.v&&r.v<4?r.o[r.v-1]:(r.v===4?r.o[2]:"");
+    c2.textContent=(r.cv?"\u2699\uFE0E ":"")+stmt;
+    if(r.v===4){const cm=el("div","pcm","Exceeds: "+(r.c.trim()||"(no comment)"));c2.appendChild(cm);}
+    if(r.v){s+=r.v;if(r.cv)cv+=r.v;}
+    tr.appendChild(c0);tr.appendChild(c1);tr.appendChild(c2);tb.appendChild(tr);
+  });
+  out.appendChild(tb);
+  out.appendChild(el("div","pscore","Total: "+s+" / 40    |    Core Values rows (\u2699\uFE0E): "+cv+" / 20"));
+  const g=document.getElementById("general").value.trim();
+  if(g){const gb=el("div","pgen");gb.appendChild(el("b",null,"General Comments"));gb.appendChild(el("div",null,g));out.appendChild(gb);}
 }
-function unfit(){document.querySelector(".page").style.zoom="";}
-window.addEventListener("beforeprint",fitToPage);
-window.addEventListener("afterprint",unfit);
-document.getElementById("print").addEventListener("click",()=>{if(validate(false))window.print();});
+window.addEventListener("beforeprint",buildPrint);
+document.getElementById("print").addEventListener("click",()=>{if(validate(false)){buildPrint();window.print();}});
 document.getElementById("submit").addEventListener("click",async()=>{
   const st=document.getElementById("status"),btn=document.getElementById("submit");
   if(!validate(true))return;
