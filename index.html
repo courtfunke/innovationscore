@@ -85,6 +85,10 @@ h1{margin:0 0 6px;font-size:36px;line-height:1;color:var(--title);letter-spacing
 .foot .ic{width:24px;height:24px}
 
 /* totals */
+.gen{margin-top:14px;border:1px solid var(--ink);border-radius:12px;padding:6px 10px 8px}
+.gen label{display:block;font-size:12px;font-weight:700}
+.gen textarea{display:block;width:100%;min-height:72px;border:0;background:transparent;resize:vertical;font:14px/1.3 Arial;padding:4px 0 0}
+.gen textarea:focus{outline:2px solid var(--sel);outline-offset:2px}
 .total{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:18px;padding:10px 14px;border:1px solid var(--ink);border-radius:12px}
 .total .n{font:700 22px "Courier New",monospace}
 .total .sub{font-size:12px;color:#444}
@@ -115,6 +119,7 @@ h1{margin:0 0 6px;font-size:36px;line-height:1;color:var(--title);letter-spacing
  .cell:hover{background:#fff}
  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
  .exc textarea{resize:none}
+ .gen textarea{resize:none}
 }
 @media(prefers-reduced-motion:reduce){.timer.done{animation:none}}
 </style>
@@ -168,6 +173,11 @@ h1{margin:0 0 6px;font-size:36px;line-height:1;color:var(--title);letter-spacing
   <div class="foot">
     <span class="cvm" style="font-size:20px;line-height:1">&#9881;&#xFE0E;</span>
     <span>Criteria marked with this gear symbol count dually toward Innovation Project and Core Values awards rankings. Core Values make up 25% of a team&rsquo;s Champion&rsquo;s score and should be demonstrated throughout their work and event experience.</span>
+  </div>
+
+  <div class="gen">
+    <label for="general">General Comments</label>
+    <textarea id="general" rows="3"></textarea>
   </div>
 
   <div class="total">
@@ -254,6 +264,23 @@ function validate(needTeam){
   st.className=msg.length?"status bad":"status";st.textContent=msg.join(" ");
   return !msg.length;
 }
+/* Shrink the sheet to fit one Letter page when printing / saving as PDF */
+function fitToPage(){
+  const pg=document.querySelector(".page"),W=7.8*96,H=10.3*96*0.98;
+  const old=pg.getAttribute("style");
+  let z=1;
+  for(let n=0;n<6;n++){
+    pg.style.cssText="width:"+(W/z)+"px;max-width:none;margin:0;padding:0;box-shadow:none";
+    const h=pg.scrollHeight,nz=Math.min(1,H/h);
+    if(Math.abs(nz-z)<0.005){z=nz;break;}
+    z=nz;
+  }
+  pg.style.cssText=old||"";
+  pg.style.zoom=z;
+}
+function unfit(){document.querySelector(".page").style.zoom="";}
+window.addEventListener("beforeprint",fitToPage);
+window.addEventListener("afterprint",unfit);
 document.getElementById("print").addEventListener("click",()=>{if(validate(false))window.print();});
 document.getElementById("submit").addEventListener("click",async()=>{
   const st=document.getElementById("status"),btn=document.getElementById("submit");
@@ -262,7 +289,7 @@ document.getElementById("submit").addEventListener("click",async()=>{
   if(submitted&&!confirm("These scores were already submitted. Submit again?"))return;
   const payload={teamName:document.getElementById("teamName").value,
     scores:ROWS.map(r=>r.v),
-    comments:ROWS.map((r,i)=>r.v===4?LABELS[i]+": "+r.c.trim():"").filter(Boolean).join(" | ")};
+    comments:ROWS.map((r,i)=>r.v===4?LABELS[i]+": "+r.c.trim():"").filter(Boolean).join(" | "),general:document.getElementById("general").value.trim()};
   btn.disabled=true;btn.textContent="Sending\u2026";
   try{
     await fetch(SHEET_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
@@ -280,7 +307,7 @@ document.getElementById("clear").addEventListener("click",()=>{
     r.ex.classList.remove("on","err");
   });
   submitted=false;
-  document.getElementById("teamName").value="";
+  document.getElementById("teamName").value="";document.getElementById("general").value="";
   tally();resetTimer();
 });
 
