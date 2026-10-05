@@ -26,9 +26,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .logo .l{font-size:19px;display:block}
 .logo .c{display:block;margin-top:6px;background:#777;color:#fff;border-radius:6px;text-align:center;font-size:17px;letter-spacing:.14em;padding:4px 0;font-weight:700}
 h1{margin:0 0 6px;font-size:36px;line-height:1;color:var(--title);letter-spacing:-1px}
-.id{display:grid;grid-template-columns:1fr 2fr 1fr;border:1px solid var(--ink);border-radius:14px;overflow:hidden}
+.id{display:grid;grid-template-columns:1fr;border:1px solid var(--ink);border-radius:14px;overflow:hidden}
 .id label{display:block;padding:3px 8px 4px;font-size:12px;height:60px}
-.id label+label{border-left:1px solid var(--ink)}
 .id input{display:block;width:100%;border:0;background:transparent;font:inherit;font-size:16px;padding:4px 0 0}
 .id input:focus{outline:2px solid var(--sel);outline-offset:1px}
 .id select{display:block;width:100%;border:0;background:transparent;font:inherit;font-size:16px;padding:4px 0 0;cursor:pointer}
@@ -146,9 +145,7 @@ h1{margin:0 0 6px;font-size:36px;line-height:1;color:var(--title);letter-spacing
     <div>
       <h1>Innovation Project</h1>
       <div class="id">
-        <label>Team #<input id="teamNo" inputmode="numeric"></label>
-        <label>Team Name<select id="teamName"><option value="">Select a team</option><option>Apex-GPT</option><option>Automatrons</option><option>Biobots</option><option>Canopy Coders</option><option>Codebreakers</option><option>Cybertronic</option><option>Duckzilla</option><option>Error 404: Chicken Not Found</option><option>Headless Chickens</option><option>Legacy Builders</option><option>MARS Eagles (The)</option><option>Master KARDS</option><option>Phoenix Phorce</option><option>Roz</option><option>Short Circuit</option><option>Solar Stars</option><option>Terrabyte Titans</option></select></label>
-        <label>Judging Room<input id="room"></label>
+                <label>Team Name<select id="teamName"><option value="">Select a team</option><option>Apex-GPT</option><option>Automatrons</option><option>Biobots</option><option>Canopy Coders</option><option>Codebreakers</option><option>Cybertronic</option><option>Duckzilla</option><option>Error 404: Chicken Not Found</option><option>Headless Chickens</option><option>Legacy Builders</option><option>MARS Eagles (The)</option><option>Master KARDS</option><option>Phoenix Phorce</option><option>Roz</option><option>Short Circuit</option><option>Solar Stars</option><option>Terrabyte Titans</option></select></label>
       </div>
     </div>
   </div>
@@ -245,14 +242,13 @@ function tally(){
   const st=document.getElementById("status");st.textContent="";st.className="status";
 }
 /* Google Sheet web app URL: paste your Apps Script "Web app" URL between the quotes (see README) */
-const SHEET_URL="https://script.google.com/a/macros/d102.org/s/AKfycbx13dxjQ1HdfUF4TM993Kai2Qg2jvjs7QQPYF_BMUdlCtzH_WN4P5NiPx72WiRtpdO3/exec";
+const SHEET_URL="";
 const LABELS=["Identify: problem","Identify: research","Design: project plan","Design: all members involved","Create: innovation explained","Create: model/drawing","Iterate: shared with others","Iterate: improvements from feedback","Communicate: solution & impact","Communicate: pride/enthusiasm"];
 let submitted=false;
 function validate(needTeam){
   const st=document.getElementById("status");let missing=0,bad=0,msg=[];
   ROWS.forEach(r=>{if(!r.v)missing++;if(r.v===4&&!r.c.trim()){bad++;r.ex.classList.add("err");}});
   if(needTeam&&!document.getElementById("teamName").value)msg.push("Select a team name.");
-  if(needTeam&&!document.getElementById("teamNo").value.trim())msg.push("Enter the team #.");
   if(missing)msg.push(missing+" row"+(missing>1?"s":"")+" still need a score.");
   if(bad)msg.push(bad+" Exceeds row"+(bad>1?"s":"")+" need a comment.");
   st.className=msg.length?"status bad":"status";st.textContent=msg.join(" ");
@@ -264,7 +260,7 @@ document.getElementById("submit").addEventListener("click",async()=>{
   if(!validate(true))return;
   if(!SHEET_URL){st.className="status bad";st.textContent="Google Sheet is not connected yet: add the web app URL to SHEET_URL in index.html.";return;}
   if(submitted&&!confirm("These scores were already submitted. Submit again?"))return;
-  const payload={teamNo:document.getElementById("teamNo").value.trim(),teamName:document.getElementById("teamName").value,room:document.getElementById("room").value.trim(),
+  const payload={teamName:document.getElementById("teamName").value,
     scores:ROWS.map(r=>r.v),
     comments:ROWS.map((r,i)=>r.v===4?LABELS[i]+": "+r.c.trim():"").filter(Boolean).join(" | ")};
   btn.disabled=true;btn.textContent="Sending\u2026";
@@ -284,7 +280,7 @@ document.getElementById("clear").addEventListener("click",()=>{
     r.ex.classList.remove("on","err");
   });
   submitted=false;
-  ["teamNo","teamName","room"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("teamName").value="";
   tally();resetTimer();
 });
 
